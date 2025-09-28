@@ -1,6 +1,3 @@
-# NASA.Hunting-for-Exoplanets-with-AI
-
-
 # Setup
 ## Installing `uv` Package Manager
 
