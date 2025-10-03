@@ -14,6 +14,7 @@ class ExoplanetModel:
         self.data_path = data_path
         self.scaler = RobustScaler()
         self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+        self.model_name = "random_forest_exoplanet_model.joblib"
         # Load and preprocess data
         self.load_data()
         self.preprocess_data()
