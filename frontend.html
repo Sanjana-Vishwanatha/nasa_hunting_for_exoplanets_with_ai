@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exoplanet Predictor</title>
+</head>
+<body>
+    <h2>Exoplanet Prediction Form</h2>
+    <form id="exoplanet-form">
+        <!-- Repeat for each input field -->
+        <label>koi_score: <input type="number" step="any" name="koi_score"></label><br>
+        <label>koi_fpflag_nt: <input type="number" step="any" name="koi_fpflag_nt"></label><br>
+        <label>koi_fpflag_ss: <input type="number" step="any" name="koi_fpflag_ss"></label><br>
+        <label>koi_fpflag_co: <input type="number" step="any" name="koi_fpflag_co"></label><br>
+        <label>koi_fpflag_ec: <input type="number" step="any" name="koi_fpflag_ec"></label><br>
+        <label>koi_period: <input type="number" step="any" name="koi_period"></label><br>
+        <label>koi_period_err1: <input type="number" step="any" name="koi_period_err1"></label><br>
+        <label>koi_period_err2: <input type="number" step="any" name="koi_period_err2"></label><br>
+        <label>koi_time0bk: <input type="number" step="any" name="koi_time0bk"></label><br>
+        <label>koi_time0bk_err1: <input type="number" step="any" name="koi_time0bk_err1"></label><br>
+        <label>koi_time0bk_err2: <input type="number" step="any" name="koi_time0bk_err2"></label><br>
+        <label>koi_impact: <input type="number" step="any" name="koi_impact"></label><br>
+        <label>koi_impact_err1: <input type="number" step="any" name="koi_impact_err1"></label><br>
+        <label>koi_impact_err2: <input type="number" step="any" name="koi_impact_err2"></label><br>
+        <label>koi_duration: <input type="number" step="any" name="koi_duration"></label><br>
+        <label>koi_duration_err1: <input type="number" step="any" name="koi_duration_err1"></label><br>
+        <label>koi_duration_err2: <input type="number" step="any" name="koi_duration_err2"></label><br>
+        <label>koi_depth: <input type="number" step="any" name="koi_depth"></label><br>
+        <label>koi_depth_err1: <input type="number" step="any" name="koi_depth_err1"></label><br>
+        <label>koi_depth_err2: <input type="number" step="any" name="koi_depth_err2"></label><br>
+        <label>koi_prad: <input type="number" step="any" name="koi_prad"></label><br>
+        <label>koi_prad_err1: <input type="number" step="any" name="koi_prad_err1"></label><br>
+        <label>koi_prad_err2: <input type="number" step="any" name="koi_prad_err2"></label><br>
+        <label>koi_teq: <input type="number" step="any" name="koi_teq"></label><br>
+        <label>koi_teq_err1: <input type="number" step="any" name="koi_teq_err1"></label><br>
+        <label>koi_teq_err2: <input type="number" step="any" name="koi_teq_err2"></label><br>
+        <label>koi_insol: <input type="number" step="any" name="koi_insol"></label><br>
+        <label>koi_insol_err1: <input type="number" step="any" name="koi_insol_err1"></label><br>
+        <label>koi_insol_err2: <input type="number" step="any" name="koi_insol_err2"></label><br>
+        <label>koi_model_snr: <input type="number" step="any" name="koi_model_snr"></label><br>
+        <label>koi_tce_plnt_num: <input type="number" step="any" name="koi_tce_plnt_num"></label><br>
+        <label>koi_steff: <input type="number" step="any" name="koi_steff"></label><br>
+        <label>koi_steff_err1: <input type="number" step="any" name="koi_steff_err1"></label><br>
+        <label>koi_steff_err2: <input type="number" step="any" name="koi_steff_err2"></label><br>
+        <label>koi_slogg: <input type="number" step="any" name="koi_slogg"></label><br>
+        <label>koi_slogg_err1: <input type="number" step="any" name="koi_slogg_err1"></label><br>
+        <label>koi_slogg_err2: <input type="number" step="any" name="koi_slogg_err2"></label><br>
+        <label>koi_srad: <input type="number" step="any" name="koi_srad"></label><br>
+        <label>koi_srad_err1: <input type="number" step="any" name="koi_srad_err1"></label><br>
+        <label>koi_srad_err2: <input type="number" step="any" name="koi_srad_err2"></label><br>
+        <label>ra: <input type="number" step="any" name="ra"></label><br>
+        <label>dec: <input type="number" step="any" name="dec"></label><br>
+        <label>koi_kepmag: <input type="number" step="any" name="koi_kepmag"></label><br>
+        <label>koi_pdisposition: <input type="number" step="any" name="koi_pdisposition"></label><br>
+        <button type="submit">Predict</button>
+    </form>
+    <h3 id="result"></h3>
+    <script>
+        document.getElementById('exoplanet-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = {};
+            for (let el of form.elements) {
+                if (el.name) {
+                    data[el.name] = el.value === "" ? null : Number(el.value);
+                }
+            }
+            const resultElem = document.getElementById('result');
+            resultElem.innerText = "Predicting...";
+            try {
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_input: data})
+                });
+                if (!response.ok) {
+                    throw new Error("Prediction failed");
+                }
+                const result = await response.json();
+                // If your backend returns a label, show it; otherwise, show the code
+                if (result.predicted_label) {
+                    resultElem.innerText = "Predicted class: " + result.predicted_label + " (code: " + result.predicted_class + ")";
+                } else {
+                    resultElem.innerText = "Predicted class code: " + result.predicted_class;
+                }
+            } catch (err) {
+                resultElem.innerText = "Error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
