@@ -24,10 +24,10 @@ class ExoplanetModel_TESS:
         self.preprocess_data()
         self.data_cleaning()
         self.scale_data()
-        self.load_model()
+        # self.load_model()
 
     def load_data(self):
-        self.tess_data = pd.read_csv(self.data_path, skiprows=69)
+        self.tess_data = pd.read_csv(self.data_path, skiprows=90)
         print("Data loaded successfully.")
 
     def preprocess_data(self):
@@ -61,18 +61,20 @@ class ExoplanetModel_TESS:
         self.features = self.tess_data.drop(columns=['tfopwg_disp'])
 
         # Identify the columns contains -inf and inf values
-        inf_columns = self.features.columns.to_series()[np.isinf(features).any()]
+        inf_columns = self.features.columns.to_series()[np.isinf(self.features).any()]
         # Replace -inf and inf values with NaN
         self.features[inf_columns] = self.features[inf_columns].replace([np.inf, -np.inf], np.nan)
         # Fill NaN values with median values
         self.features.fillna(self.median_values, inplace=True)
         print(f"Columns with -inf or inf values replaced: {list(inf_columns)}")
-        # Scale the features
-        self.scaled_features = self.scaler.fit_transform(self.features)
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            self.scaled_features, 
-            self.tess_data['tfopwg_disp'], 
-            test_size=0.2, 
-            random_state=42
-        )
+        scaled_data = self.scaler.fit_transform(self.features)
+        # Convert scaled_data (numpy array) back to DataFrame with original column names
+        scaled_df = pd.DataFrame(scaled_data, columns=self.features.columns)
+
+        # add back the label columns for ML training:
+        self.final_df = pd.concat([scaled_df, self.tess_data[['tfopwg_disp']].reset_index(drop=True)], axis=1)
+       
         print("Data scaling completed.")
+
+
+test = ExoplanetModel_TESS(data_path="dataset\TESS_exoplanet_data.csv")
