@@ -16,7 +16,9 @@ class ExoplanetModel:
         self.data_path = data_path
         self.scaler = RobustScaler()
         self.model = RandomForestClassifier(n_estimators=100, random_state=42)
-        self.model_name = "random_forest_exoplanet_model.joblib"
+        self.model_name = "./models/random_forest_exoplanet_model.joblib"
+        # Store median values for filling nulls
+        self.median_values = {}
         # Load and preprocess data
         self.load_data()
         self.preprocess_data()
@@ -53,11 +55,11 @@ class ExoplanetModel:
             self.kepler_data[column] = self.kepler_data[column].astype('category')
             self.kepler_data[column] = self.kepler_data[column].cat.codes
 
+        # Store median values before filling
+        self.median_values = self.kepler_data.median(numeric_only=True).to_dict()
+        
         # Fill all numeric columns' missing values with their median
-        self.kepler_data.fillna(
-            self.kepler_data.median(numeric_only=True),
-            inplace=True
-        )
+        self.kepler_data.fillna(self.median_values, inplace=True)
 
     def scale_data(self):
         self.data_to_scale = self.kepler_data.drop(columns=['koi_disposition', 'koi_pdisposition'])
@@ -80,7 +82,6 @@ class ExoplanetModel:
             median_value = self.data_to_scale[column].median()
             self.data_to_scale[column].fillna(median_value, inplace=True)
 
-
         # Apply RobustScaler
         scaler = RobustScaler()
         scaled_data = scaler.fit_transform(self.data_to_scale)
@@ -89,7 +90,10 @@ class ExoplanetModel:
 
         # add back the label columns for ML training:
         self.final_df = pd.concat([scaled_df, self.kepler_data[['koi_disposition', 'koi_pdisposition']].reset_index(drop=True)], axis=1)
-        # print(final_df.head(3))
+        
+        # Store the feature columns for prediction
+        self.feature_columns = self.final_df.columns.drop('koi_disposition').tolist()
+        
         print("Data scaling completed.")
 
     def train_model(self):
@@ -118,7 +122,7 @@ class ExoplanetModel:
         print("Accuracy:", accuracy_score(y_test, y_pred))
         print(classification_report(y_test, y_pred))
 
-        self.model_name = "random_forest_exoplanet_model.joblib"
+        self.model_name = "./models/random_forest_exoplanet_model.joblib"
 
         joblib.dump(clf, self.model_name)
 
@@ -129,94 +133,64 @@ class ExoplanetModel:
         print("Model loaded successfully.")
 
     def predict(self, input_data):
-        # Ensure input_data is a DataFrame
+        # Ensure input_data is provided
         if input_data is None:
-            input_data = {
-                'koi_score': 0.9,
-                'koi_fpflag_nt': 1,
-                'koi_fpflag_ss': 0,
-                'koi_fpflag_co': 0,
-                'koi_fpflag_ec': 0,
-                'koi_period': 10.5,
-                'koi_period_err1': 0.01,
-                'koi_period_err2': -0.01,
-                'koi_time0bk': 130.5,
-                'koi_time0bk_err1': 0.1,
-                'koi_time0bk_err2': -0.1,
-                'koi_impact': 0.2,
-                'koi_impact_err1': 0.01,
-                'koi_impact_err2': -0.01,
-                'koi_duration': 5.0,
-                'koi_duration_err1': 0.2,
-                'koi_duration_err2': -0.2,
-                'koi_depth': 1500,
-                'koi_depth_err1': 100,
-                'koi_depth_err2': -100,
-                'koi_prad': 1.2,
-                'koi_prad_err1': 0.05,
-                'koi_prad_err2': -0.05,
-                'koi_teq': 500,
-                'koi_teq_err1': 10,
-                'koi_teq_err2': -10,
-                'koi_insol': 1.1,
-                'koi_insol_err1': 0.1,
-                'koi_insol_err2': -0.1,
-                'koi_model_snr': 15.0,
-                'koi_tce_plnt_num': 1,
-                'koi_steff': 5700,
-                'koi_steff_err1': 50,
-                'koi_steff_err2': -50,
-                'koi_slogg': 4.4,
-                'koi_slogg_err1': 0.1,
-                'koi_slogg_err2': -0.1,
-                'koi_srad': 1.0,
-                'koi_srad_err1': 0.05,
-                'koi_srad_err2': -0.05,
-                'ra': 290.0,
-                'dec': 44.5,
-                'koi_kepmag': 14.0,
-                'koi_pdisposition': 1  # If this was used as a feature
-            }
+            return "Error: No input data provided"
+        
+        # Convert to DataFrame if it's a dictionary
         if not isinstance(input_data, pd.DataFrame):
             input_data = pd.DataFrame([input_data])
-
+        
+        # Fill null values with median values from training data
+        for column in input_data.columns:
+            if column in self.median_values:
+                input_data[column].fillna(self.median_values[column], inplace=True)
+            else:
+                # If column not in median_values, fill with 0 or appropriate default
+                input_data[column].fillna(0, inplace=True)
+        
         # Preprocess input data (handle categorical variables and scaling)
         input_data = pd.get_dummies(input_data)
+        
+        # Align columns with training data
         input_data = input_data.reindex(columns=self.final_df.columns.drop('koi_disposition'), fill_value=0)
 
         # Make prediction
         prediction = self.model.predict(input_data)
         predicted_class = self.categories[prediction[0]]
-        return predicted_class
+        predicted_code = int(prediction[0])
+        
+        return {
+            'predicted_class': predicted_code,
+            'predicted_label': predicted_class
+        }
 
 @app.route('/predict', methods=['POST'])
 def predict_route():
-    data = request.get_json()
-    user_input = data.get('user_input')
-    file_path  = "./dataset/kepler_exoplanet_data.csv"
-    if not file_path:
-        return jsonify({'error': 'file_path is required'}), 400
-    
-    exoplanet_model = ExoplanetModel(file_path)
-    # user_input = None
-    prediction = exoplanet_model.predict(user_input)
-    print(f"The predicted class for the input data is: {prediction}")
-
-    return jsonify({'predicted_class': prediction})
+    try:
+        data = request.get_json()
+        user_input = data.get('user_input')
+        file_path = "./dataset/kepler_exoplanet_data.csv"
+        
+        if not user_input:
+            return jsonify({'error': 'user_input is required'}), 400
+        
+        # Initialize model (you might want to cache this instead of creating new instance each time)
+        exoplanet_model = ExoplanetModel(file_path)
+        
+        # Get prediction
+        result = exoplanet_model.predict(user_input)
+        
+        if isinstance(result, dict):
+            print(f"The predicted class for the input data is: {result['predicted_label']} (Code: {result['predicted_class']})")
+            return jsonify(result)
+        else:
+            return jsonify({'error': result}), 400
+            
+    except Exception as e:
+        print(f"Error during prediction: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     print("----------------python file executing------------------")
-    app.run(port=5000)
-
-# if __name__ == "__main__":
-#     data_path  = "dataset\kepler_exoplanet_data.csv"
-#     exoplanet_model = ExoplanetModel(data_path)
-    
-#     # Train the model
-#     model_path = exoplanet_model.train_model()
-#     # Load the trained model
-#     exoplanet_model.load_model(model_path)
-#     # Example user input for prediction
-#     user_input = None
-#     prediction = exoplanet_model.predict(user_input)
-#     print(f"The predicted class for the input data is: {prediction}")
+    app.run(port=5000, debug=True)
