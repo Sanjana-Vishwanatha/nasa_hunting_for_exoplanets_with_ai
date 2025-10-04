@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import joblib
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import train_test_split
@@ -8,6 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 
 app = Flask(__name__)
+CORS(app)
 
 class ExoplanetModel:
     def __init__(self, data_path):
@@ -191,7 +193,7 @@ class ExoplanetModel:
 def predict_route():
     data = request.get_json()
     user_input = data.get('user_input')
-    file_path  = "dataset\kepler_exoplanet_data.csv"
+    file_path  = "./dataset/kepler_exoplanet_data.csv"
     if not file_path:
         return jsonify({'error': 'file_path is required'}), 400
     
