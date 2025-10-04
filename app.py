@@ -205,6 +205,7 @@ def predict_route():
         print(f"Error during prediction: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+    
 if __name__ == "__main__":
     print("----------------python file executing------------------")
     app.run(port=5000, debug=True)
