@@ -162,3 +162,37 @@ button[type="submit"]:active {
         padding: 20px;
     }
 }
+
+.upload-container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.upload-container input[type="file"] {
+  border: 2px solid #e0e7ff;
+  padding: 10px;
+  border-radius: 8px;
+  background: #fafbff;
+  cursor: pointer;
+}
+
+.upload-container button {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+}
+
+.upload-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(42, 82, 152, 0.4);
+}

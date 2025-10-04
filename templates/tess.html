@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exoplanet Predictor</title>
+    <link rel="stylesheet" href="./css/kepler.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛰️ TESS</h1>
+            <p>Advanced Machine Learning Classification</p>
+        </div>
+
+        <div class="form-container">
+            <form id="exoplanet-form">
+                <h2 class="section-title">KOI Score & Flags</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Score</label>
+                        <input type="number" step="any" name="koi_score">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI FP Flag NT</label>
+                        <input type="number" step="any" name="koi_fpflag_nt">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI FP Flag SS</label>
+                        <input type="number" step="any" name="koi_fpflag_ss">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI FP Flag CO</label>
+                        <input type="number" step="any" name="koi_fpflag_co">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI FP Flag EC</label>
+                        <input type="number" step="any" name="koi_fpflag_ec">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Orbital Period</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Period</label>
+                        <input type="number" step="any" name="koi_period">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Period Error 1</label>
+                        <input type="number" step="any" name="koi_period_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Period Error 2</label>
+                        <input type="number" step="any" name="koi_period_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Transit Time</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Time0 BK</label>
+                        <input type="number" step="any" name="koi_time0bk">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Time0 BK Error 1</label>
+                        <input type="number" step="any" name="koi_time0bk_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Time0 BK Error 2</label>
+                        <input type="number" step="any" name="koi_time0bk_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Impact Parameter</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Impact</label>
+                        <input type="number" step="any" name="koi_impact">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Impact Error 1</label>
+                        <input type="number" step="any" name="koi_impact_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Impact Error 2</label>
+                        <input type="number" step="any" name="koi_impact_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Transit Duration</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Duration</label>
+                        <input type="number" step="any" name="koi_duration">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Duration Error 1</label>
+                        <input type="number" step="any" name="koi_duration_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Duration Error 2</label>
+                        <input type="number" step="any" name="koi_duration_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Transit Depth</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Depth</label>
+                        <input type="number" step="any" name="koi_depth">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Depth Error 1</label>
+                        <input type="number" step="any" name="koi_depth_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Depth Error 2</label>
+                        <input type="number" step="any" name="koi_depth_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Planetary Radius</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Planetary Radius</label>
+                        <input type="number" step="any" name="koi_prad">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Prad Error 1</label>
+                        <input type="number" step="any" name="koi_prad_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Prad Error 2</label>
+                        <input type="number" step="any" name="koi_prad_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Equilibrium Temperature</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Teq</label>
+                        <input type="number" step="any" name="koi_teq">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Teq Error 1</label>
+                        <input type="number" step="any" name="koi_teq_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Teq Error 2</label>
+                        <input type="number" step="any" name="koi_teq_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Insolation Flux</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Insol</label>
+                        <input type="number" step="any" name="koi_insol">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Insol Error 1</label>
+                        <input type="number" step="any" name="koi_insol_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Insol Error 2</label>
+                        <input type="number" step="any" name="koi_insol_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Model Parameters</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Model SNR</label>
+                        <input type="number" step="any" name="koi_model_snr">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI TCE Planet Number</label>
+                        <input type="number" step="any" name="koi_tce_plnt_num">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Stellar Effective Temperature</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Steff</label>
+                        <input type="number" step="any" name="koi_steff">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Steff Error 1</label>
+                        <input type="number" step="any" name="koi_steff_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Steff Error 2</label>
+                        <input type="number" step="any" name="koi_steff_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Stellar Surface Gravity</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Slogg</label>
+                        <input type="number" step="any" name="koi_slogg">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Slogg Error 1</label>
+                        <input type="number" step="any" name="koi_slogg_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Slogg Error 2</label>
+                        <input type="number" step="any" name="koi_slogg_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Stellar Radius</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Stellar Radius</label>
+                        <input type="number" step="any" name="koi_srad">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Srad Error 1</label>
+                        <input type="number" step="any" name="koi_srad_err1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Srad Error 2</label>
+                        <input type="number" step="any" name="koi_srad_err2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Coordinates & Magnitude</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Right Ascension (RA)</label>
+                        <input type="number" step="any" name="ra">
+                    </div>
+                    <div class="form-group">
+                        <label>Declination (Dec)</label>
+                        <input type="number" step="any" name="dec">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Kepler Magnitude</label>
+                        <input type="number" step="any" name="koi_kepmag">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI P-Disposition</label>
+                        <input type="number" step="any" name="koi_pdisposition">
+                    </div>
+                </div>
+
+                <div class="submit-container">
+                    <button type="submit">Generate Prediction</button>
+                </div>
+                <h2 class="section-title">Upload File for Prediction</h2>
+                    <div class="upload-container">
+                        <input type="file" id="file-input" accept=".csv,.json" />
+                        <button type="button" onclick="uploadFile()">Upload & Predict</button>
+                    </div>
+                <div class="result-container">
+                    <h3 id="result"></h3>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/kepler.js"></script>
+</body>
+</html>

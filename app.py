@@ -165,6 +165,20 @@ class ExoplanetModel:
             'predicted_label': predicted_class
         }
 
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    
+    file = request.files['file']
+    if file.filename.endswith('.csv'):
+        df = pd.read_csv(file)
+    elif file.filename.endswith('.json'):
+        df = pd.read_json(file)
+    else:
+        return jsonify({"error": "Unsupported file type"}), 400
+    
+
 @app.route('/predict', methods=['POST'])
 def predict_route():
     try:

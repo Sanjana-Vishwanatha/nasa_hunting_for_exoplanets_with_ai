@@ -37,3 +37,38 @@ document.getElementById('exoplanet-form').onsubmit = async function(e) {
         resultElem.innerText = "Error: " + err.message;
     }
 }
+
+async function uploadFile() {
+  const fileInput = document.getElementById('file-input');
+  const file = fileInput.files[0];
+  if (!file) {
+    alert("Please select a file first.");
+    return;
+  }
+
+  const resultElem = document.getElementById('result');
+  resultElem.className = 'loading';
+  resultElem.innerText = "Uploading & analyzing file...";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch("http://localhost:5000/upload", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error("File prediction failed");
+    }
+
+    const result = await response.json();
+    resultElem.className = '';
+    resultElem.innerText = "Predicted Class: " + result.predicted_label + 
+                           " (Code: " + result.predicted_class + ")";
+  } catch (err) {
+    resultElem.className = '';
+    resultElem.innerText = "Error: " + err.message;
+  }
+}
