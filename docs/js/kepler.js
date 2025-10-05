@@ -73,14 +73,13 @@ async function uploadFile() {
     if (Array.isArray(result)) {
       let output = "Predictions:<br><ul>";
       result.forEach((item, idx) => {
-        output += `<li>Row ${idx + 1}: ${item.predicted_label} (Code: ${item.predicted_class})</li>`;
+        output += `<li>Row ${idx + 1}: ${item.predicted_label}</li>`;
       });
       output += "</ul>";
       resultElem.innerHTML = output;
     } else {
       // Fallback for single prediction
-      resultElem.innerText = "Predicted Class: " + result.predicted_label +
-                             " (Code: " + result.predicted_class + ")";
+      resultElem.innerText = "Predicted Class: " + result.predicted_label;
     }
   } catch (err) {
     resultElem.className = '';

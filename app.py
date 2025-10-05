@@ -24,8 +24,8 @@ class ExoplanetModel:
     def load_data(self):
         self.kepler_data = pd.read_csv(self.data_path, skiprows=53)
         print("Data loaded successfully.")
+
     def preprocess_data(self):
-        
         # Drop the unnecessary columns like KEPID, KOI Name, Kepler Name, koi_tce_delivname.
         self.kepler_data = self.kepler_data.drop(columns=['kepid', 'kepoi_name', 'kepler_name', 'koi_tce_delivname'])
         
@@ -105,7 +105,6 @@ class ExoplanetModel:
         # Initialize and train the Random Forest Classifier
         clf = RandomForestClassifier(
             n_estimators=100,    # number of trees
-            max_depth=None,      # let it grow deep (or set manually)
             random_state=42
         )
 
