@@ -431,7 +431,8 @@ This project is developed for NASA Space Apps Challenge 2025.
 
 ## 👥 Team
 
-Add your team information here.
+Sanjana - sanjana.vishwanatha2000@gmail.com
+Nagarjun - nagarjunts008@gmail.com
 
 ---
 
