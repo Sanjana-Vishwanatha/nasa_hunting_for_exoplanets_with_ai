@@ -1,21 +1,16 @@
 import pandas as pd
 import numpy as np
 import joblib
-from flask_cors import CORS
-from flask import Flask, request, jsonify
 from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 
-app = Flask(__name__)
-CORS(app)
-
 class ExoplanetModel:
-    def __init__(self, data_path):
-        self.data_path = data_path
+    def __init__(self):
+        self.data_path = "./dataset/kepler_exoplanet_data.csv"
         self.scaler = RobustScaler()
-        self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+        self.model = None
         self.model_name = "./models/random_forest_exoplanet_model.joblib"
         # Store median values for filling nulls
         self.median_values = {}
@@ -29,7 +24,6 @@ class ExoplanetModel:
     def load_data(self):
         self.kepler_data = pd.read_csv(self.data_path, skiprows=53)
         print("Data loaded successfully.")
-
     def preprocess_data(self):
         
         # Drop the unnecessary columns like KEPID, KOI Name, Kepler Name, koi_tce_delivname.
@@ -83,8 +77,8 @@ class ExoplanetModel:
             self.data_to_scale[column].fillna(median_value, inplace=True)
 
         # Apply RobustScaler
-        scaler = RobustScaler()
-        scaled_data = scaler.fit_transform(self.data_to_scale)
+        scaled_data = self.scaler.fit_transform(self.data_to_scale)
+
         # Convert scaled_data (numpy array) back to DataFrame with original column names
         scaled_df = pd.DataFrame(scaled_data, columns=self.data_to_scale.columns)
 
@@ -132,11 +126,7 @@ class ExoplanetModel:
         self.model = joblib.load(self.model_name)
         print("Model loaded successfully.")
 
-    def predict(self, input_data):
-        # Ensure input_data is provided
-        if input_data is None:
-            return "Error: No input data provided"
-        
+    def prepare_predict_data(self, input_data):
         # Convert to DataFrame if it's a dictionary
         if not isinstance(input_data, pd.DataFrame):
             input_data = pd.DataFrame([input_data])
@@ -154,9 +144,53 @@ class ExoplanetModel:
         
         # Align columns with training data
         input_data = input_data.reindex(columns=self.final_df.columns.drop('koi_disposition'), fill_value=0)
-
-        # Make prediction
-        prediction = self.model.predict(input_data)
+        
+        return input_data
+    
+    def predict(self, input_data):
+        # Ensure input_data is provided
+        if input_data is None:
+            return "Error: No input data provided"
+        
+        # Convert to DataFrame if it's a dictionary
+        if not isinstance(input_data, pd.DataFrame):
+            input_data = pd.DataFrame([input_data])
+    
+        # Fill null values with median values from training data
+        for column in input_data.columns:
+            if column in self.median_values:
+                input_data[column] = input_data[column].fillna(self.median_values[column])
+            else:
+                input_data[column] = input_data[column].fillna(0)
+    
+        # Handle categorical columns the same way as in training
+        if 'koi_pdisposition' in input_data.columns:
+            # Use the same categories as in training
+            input_data['koi_pdisposition'] = input_data['koi_pdisposition'].astype('category')
+            # Align categories with training data
+            input_data['koi_pdisposition'] = input_data['koi_pdisposition'].cat.set_categories(
+                self.kepler_data['koi_pdisposition'].astype('category').cat.categories
+            )
+            input_data['koi_pdisposition'] = input_data['koi_pdisposition'].cat.codes
+            # If unknown category, will be set to -1;
+    
+        # Align columns with training data
+        input_data = input_data.reindex(columns=self.final_df.columns.drop('koi_disposition'), fill_value=0)
+    
+        # Drop 'koi_pdisposition' before scaling
+        data_to_scale = input_data.drop(columns=['koi_pdisposition'])
+        
+        # Scale the input data
+        scaled_input_data = self.scaler.transform(data_to_scale)
+        
+        # Convert scaled data back to DataFrame with correct columns
+        scaled_df = pd.DataFrame(scaled_input_data, columns=data_to_scale.columns)
+        
+        # Add back the 'koi_pdisposition' column
+        scaled_df['koi_pdisposition'] = input_data['koi_pdisposition'].values
+        
+        # Now use scaled_df for prediction
+        prediction = self.model.predict(scaled_df)
         predicted_class = self.categories[prediction[0]]
         predicted_code = int(prediction[0])
         
@@ -164,48 +198,3 @@ class ExoplanetModel:
             'predicted_class': predicted_code,
             'predicted_label': predicted_class
         }
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-    
-    file = request.files['file']
-    if file.filename.endswith('.csv'):
-        df = pd.read_csv(file)
-    elif file.filename.endswith('.json'):
-        df = pd.read_json(file)
-    else:
-        return jsonify({"error": "Unsupported file type"}), 400
-    
-
-@app.route('/predict', methods=['POST'])
-def predict_route():
-    try:
-        data = request.get_json()
-        user_input = data.get('user_input')
-        file_path = "./dataset/kepler_exoplanet_data.csv"
-        
-        if not user_input:
-            return jsonify({'error': 'user_input is required'}), 400
-        
-        # Initialize model (you might want to cache this instead of creating new instance each time)
-        exoplanet_model = ExoplanetModel(file_path)
-        
-        # Get prediction
-        result = exoplanet_model.predict(user_input)
-        
-        if isinstance(result, dict):
-            print(f"The predicted class for the input data is: {result['predicted_label']} (Code: {result['predicted_class']})")
-            return jsonify(result)
-        else:
-            return jsonify({'error': result}), 400
-            
-    except Exception as e:
-        print(f"Error during prediction: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-    
-if __name__ == "__main__":
-    print("----------------python file executing------------------")
-    app.run(port=5000, debug=True)

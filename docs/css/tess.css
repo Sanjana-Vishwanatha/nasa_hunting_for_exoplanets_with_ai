@@ -196,3 +196,21 @@ button[type="submit"]:active {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(42, 82, 152, 0.4);
 }
+
+.go-back-btn {
+        margin-top: 25px;
+        background: #ffcc00;
+        color: #1e3c72;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+.go-back-btn:hover {
+        background: #ffdb4d;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
