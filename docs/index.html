@@ -198,6 +198,21 @@
       }
     }
 
+    .header img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      z-index: 1;
+      position: relative;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .header img:hover {
+      transform: scale(1.05);
+    }
+
     .header h1 {
       font-size: 2.5em;
       margin-bottom: 15px;
@@ -279,6 +294,11 @@
         padding: 10px 20px;
         font-size: 0.9em;
       }
+
+      .header img {
+        width: 80px;
+        height: 80px;
+      }
     }
   </style>
 </head>
@@ -296,7 +316,8 @@
 
   <div class="container">
     <div class="header">
-      <h1>🪐 A World Away: Hunting for Exoplanets</h1>
+      <img src="./img/Logo.png" alt="Deep Sky Divers Logo">
+      <h1>A World Away: Hunting for Exoplanets</h1>
       <p>Welcome to our exploration portal. Choose your mission:</p>
     </div>
 
