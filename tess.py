@@ -8,7 +8,7 @@ from sklearn.metrics import accuracy_score, classification_report
 
 class ExoplanetModel_TESS:
     def __init__(self):
-        self.data_path = "dataset\TESS_exoplanet_data.csv"
+        self.data_path = "dataset/TESS_exoplanet_data.csv"
         self.scaler = RobustScaler()
         self.model = None
         self.model_name = "./models/random_forest_exoplanet_model_tess.joblib"

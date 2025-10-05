@@ -209,6 +209,12 @@
             transform: translateY(0);
         }
 
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
         .result-container {
             margin-top: 30px;
             padding: 25px;
@@ -226,6 +232,14 @@
             color: #e0e7ff;
             font-size: 1.2em;
             font-weight: 600;
+        }
+
+        #result.success {
+            color: #4ade80;
+        }
+
+        #result.error {
+            color: #f87171;
         }
 
         #result:empty {
@@ -472,21 +486,22 @@
                     <button type="submit">Generate Prediction</button>
                 </div>
                 
-                <h2 class="section-title">Upload CSV File for Multiple Predictions</h2>
-                <div class="upload-container">
-                    <input type="file" id="file-input" accept=".csv,.json" />
-                    <button type="button" onclick="uploadFile()">Upload & Predict</button>
-                </div>
-                
                 <div class="result-container">
                     <h3 id="result"></h3>
                 </div>
             </form>
+            
+            <h2 class="section-title">Upload CSV File for Multiple Predictions</h2>
+            <div class="upload-container">
+                <input type="file" id="file-input" accept=".csv,.json" />
+                <button type="button" id="upload-btn" disabled>Upload & Predict</button>
+            </div>
         </div>
     </div>
 
-    <script src="js/tess.js"></script>
     <script>
+        const API_URL = 'http://localhost:5000';
+        
         // Generate random stars
         const starsContainer = document.getElementById('stars');
         const numStars = 150;
@@ -500,6 +515,108 @@
             star.style.animationDuration = (Math.random() * 3 + 2) + 's';
             starsContainer.appendChild(star);
         }
+
+        // Single prediction form
+        document.getElementById('exoplanet-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                data[key] = isNaN(value) || value === '' ? value : parseFloat(value);
+            });
+            
+            const resultElement = document.getElementById('result');
+            resultElement.className = 'loading';
+            resultElement.textContent = 'Processing prediction...';
+            
+            try {
+                const response = await fetch(`${API_URL}/predict_tess`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ user_input: data })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultElement.className = 'success';
+                    resultElement.textContent = `Prediction: ${result.predicted_label} (Code: ${result.predicted_class})`;
+                } else {
+                    resultElement.className = 'error';
+                    resultElement.textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                resultElement.className = 'error';
+                resultElement.textContent = `Error: ${error.message}`;
+            }
+        });
+
+        // File upload handling
+        const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('upload-btn');
+        const resultElement = document.getElementById('result');
+        
+        let selectedFile = null;
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                uploadBtn.disabled = false;
+            }
+        });
+
+        // Upload button click
+        uploadBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            uploadBtn.disabled = true;
+            resultElement.className = 'loading';
+            resultElement.textContent = 'Processing predictions...';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                const response = await fetch(`${API_URL}/upload_tess`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `tess_predictions_${Date.now()}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    resultElement.className = 'success';
+                    resultElement.textContent = 'Predictions complete! CSV file downloaded.';
+                    
+                    fileInput.value = '';
+                    selectedFile = null;
+                    uploadBtn.disabled = true;
+                } else {
+                    const errorData = await response.json();
+                    resultElement.className = 'error';
+                    resultElement.textContent = `Error: ${errorData.error}`;
+                    uploadBtn.disabled = false;
+                }
+            } catch (error) {
+                resultElement.className = 'error';
+                resultElement.textContent = `Error: ${error.message}`;
+                uploadBtn.disabled = false;
+            }
+        });
     </script>
 </body>
 </html>
