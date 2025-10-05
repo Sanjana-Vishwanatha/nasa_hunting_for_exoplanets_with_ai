@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kepler - Exoplanet Predictor</title>
+    <link rel="icon" type="image/png" href="./img/Logo.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.9) 100%);
+            color: white;
+            padding: 12px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
+            z-index: 1000;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(42, 82, 152, 0.6);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.9) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #e0e7ff;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: #667eea;
+        }
+
+        .form-group select option {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .submit-container {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        button[type="submit"],
+        .upload-btn {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+            color: white;
+            padding: 16px 60px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button[type="submit"]:hover,
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button[type="submit"]:active,
+        .upload-btn:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #result {
+            color: #e0e7ff;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        #result.success {
+            color: #4ade80;
+        }
+
+        #result.error {
+            color: #f87171;
+        }
+
+        #result:empty {
+            display: none;
+        }
+
+        .loading {
+            color: #a8b5ff;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .section-title {
+            color: #a8b5ff;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(168, 181, 255, 0.3);
+        }
+
+        .upload-section {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px dashed rgba(102, 126, 234, 0.4);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .upload-section.dragging {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.25);
+        }
+
+        .upload-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 30px;
+            background: rgba(102, 126, 234, 0.3);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .file-input-label:hover {
+            background: rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .file-info {
+            color: #a8b5ff;
+            font-size: 0.95em;
+            margin-top: 15px;
+            min-height: 24px;
+        }
+
+        .upload-btn {
+            padding: 12px 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            .back-btn {
+                top: 10px;
+                left: 10px;
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back</a>
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🛰️ Kepler</h1>
+            <p>Advanced Machine Learning Classification</p>
+        </div>
+
+        <div class="form-container">
+            <form id="exoplanet-form">
+                <h2 class="section-title">KOI Score & Flags</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Score</label>
+                        <input type="number" step="any" name="koi_score" value="0.9">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI FP Flag NT</label>
+                        <input type="number" step="any" name="koi_fpflag_nt" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI FP Flag SS</label>
+                        <input type="number" step="any" name="koi_fpflag_ss" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI FP Flag CO</label>
+                        <input type="number" step="any" name="koi_fpflag_co" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI FP Flag EC</label>
+                        <input type="number" step="any" name="koi_fpflag_ec" value="0">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Orbital Period</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Period</label>
+                        <input type="number" step="any" name="koi_period" value="10.5">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Period Error 1</label>
+                        <input type="number" step="any" name="koi_period_err1" value="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Period Error 2</label>
+                        <input type="number" step="any" name="koi_period_err2" value="-0.01">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Transit Time</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Time0 BK</label>
+                        <input type="number" step="any" name="koi_time0bk" value="130.5">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Time0 BK Error 1</label>
+                        <input type="number" step="any" name="koi_time0bk_err1" value="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Time0 BK Error 2</label>
+                        <input type="number" step="any" name="koi_time0bk_err2" value="-0.1">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Impact Parameter</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Impact</label>
+                        <input type="number" step="any" name="koi_impact" value="0.2">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Impact Error 1</label>
+                        <input type="number" step="any" name="koi_impact_err1" value="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Impact Error 2</label>
+                        <input type="number" step="any" name="koi_impact_err2" value="-0.01">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Transit Duration</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Duration</label>
+                        <input type="number" step="any" name="koi_duration" value="5.0">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Duration Error 1</label>
+                        <input type="number" step="any" name="koi_duration_err1" value="0.2">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Duration Error 2</label>
+                        <input type="number" step="any" name="koi_duration_err2" value="-0.2">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Transit Depth</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Depth</label>
+                        <input type="number" step="any" name="koi_depth" value="1500">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Depth Error 1</label>
+                        <input type="number" step="any" name="koi_depth_err1" value="100">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Depth Error 2</label>
+                        <input type="number" step="any" name="koi_depth_err2" value="-100">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Planetary Radius</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Planetary Radius</label>
+                        <input type="number" step="any" name="koi_prad" value="1.2">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Prad Error 1</label>
+                        <input type="number" step="any" name="koi_prad_err1" value="0.05">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Prad Error 2</label>
+                        <input type="number" step="any" name="koi_prad_err2" value="-0.05">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Equilibrium Temperature</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Teq</label>
+                        <input type="number" step="any" name="koi_teq" value="500">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Teq Error 1</label>
+                        <input type="number" step="any" name="koi_teq_err1" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Teq Error 2</label>
+                        <input type="number" step="any" name="koi_teq_err2" value="-10">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Insolation Flux</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Insol</label>
+                        <input type="number" step="any" name="koi_insol" value="1.1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Insol Error 1</label>
+                        <input type="number" step="any" name="koi_insol_err1" value="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Insol Error 2</label>
+                        <input type="number" step="any" name="koi_insol_err2" value="-0.1">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Model Parameters</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Model SNR</label>
+                        <input type="number" step="any" name="koi_model_snr" value="15.0">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI TCE Planet Number</label>
+                        <input type="number" step="any" name="koi_tce_plnt_num" value="1">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Stellar Effective Temperature</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Steff</label>
+                        <input type="number" step="any" name="koi_steff" value="5700">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Steff Error 1</label>
+                        <input type="number" step="any" name="koi_steff_err1" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Steff Error 2</label>
+                        <input type="number" step="any" name="koi_steff_err2" value="-50">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Stellar Surface Gravity</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Slogg</label>
+                        <input type="number" step="any" name="koi_slogg" value="4.4">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Slogg Error 1</label>
+                        <input type="number" step="any" name="koi_slogg_err1" value="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Slogg Error 2</label>
+                        <input type="number" step="any" name="koi_slogg_err2" value="-0.1">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Stellar Radius</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>KOI Stellar Radius</label>
+                        <input type="number" step="any" name="koi_srad" value="1.0">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Srad Error 1</label>
+                        <input type="number" step="any" name="koi_srad_err1" value="0.05">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Srad Error 2</label>
+                        <input type="number" step="any" name="koi_srad_err2" value="-0.05">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Coordinates & Magnitude</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Right Ascension (RA)</label>
+                        <input type="number" step="any" name="ra" value="290.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Declination (Dec)</label>
+                        <input type="number" step="any" name="dec" value="44.5">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI Kepler Magnitude</label>
+                        <input type="number" step="any" name="koi_kepmag" value="14.0">
+                    </div>
+                    <div class="form-group">
+                        <label>KOI P-Disposition</label>
+                        <select name="koi_pdisposition">
+                            <option value="">-- Select --</option>
+                            <option value="CANDIDATE">CANDIDATE</option>
+                            <option value="FALSE POSITIVE">FALSE POSITIVE</option>
+                            <option value="CONFIRMED">CONFIRMED</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="submit-container">
+                    <button type="submit">Generate Prediction</button>
+                </div>
+                
+                <div class="result-container">
+                    <h3 id="result"></h3>
+                </div>
+            </form>
+
+            <h2 class="section-title">Upload CSV File for Multiple Predictions</h2>
+            <div class="upload-section" id="upload-section">
+                <div class="upload-container">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="file-input" accept=".csv,.json" />
+                        <label for="file-input" class="file-input-label">📁 Choose File</label>
+                    </div>
+                    <button type="button" class="upload-btn" id="upload-btn" disabled>Upload & Predict</button>
+                </div>
+                <div class="file-info" id="file-info">No file selected</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+
+        // Generate random stars
+        const starsContainer = document.getElementById('stars');
+        const numStars = 150;
+        
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Single prediction form
+        document.getElementById('exoplanet-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                data[key] = isNaN(value) || value === '' ? value : parseFloat(value);
+            });
+            
+            const resultElement = document.getElementById('result');
+            resultElement.className = 'loading';
+            resultElement.textContent = 'Processing prediction...';
+            
+            try {
+                const response = await fetch(`${API_URL}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ user_input: data })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultElement.className = 'success';
+                    resultElement.textContent = `Prediction: ${result.predicted_label} (Code: ${result.predicted_class})`;
+                } else {
+                    resultElement.className = 'error';
+                    resultElement.textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                resultElement.className = 'error';
+                resultElement.textContent = `Error: ${error.message}`;
+            }
+        });
+
+        // File upload handling
+        const fileInput = document.getElementById('file-input');
+        const fileInfo = document.getElementById('file-info');
+        const uploadBtn = document.getElementById('upload-btn');
+        const uploadSection = document.getElementById('upload-section');
+        const resultElement = document.getElementById('result');
+        
+        let selectedFile = null;
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                uploadBtn.disabled = false;
+            }
+        });
+
+        // Drag and drop
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragging');
+        });
+
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragging');
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragging');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && (file.name.endsWith('.csv') || file.name.endsWith('.json'))) {
+                selectedFile = file;
+                fileInput.files = e.dataTransfer.files;
+                fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                uploadBtn.disabled = false;
+            } else {
+                fileInfo.textContent = 'Please drop a valid CSV or JSON file';
+            }
+        });
+
+        // Upload button click
+        uploadBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            uploadBtn.disabled = true;
+            resultElement.className = 'loading';
+            resultElement.textContent = 'Processing predictions...';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                const response = await fetch(`${API_URL}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `kepler_predictions_${Date.now()}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    resultElement.className = 'success';
+                    resultElement.textContent = 'Predictions complete! CSV file downloaded.';
+                    
+                    fileInput.value = '';
+                    selectedFile = null;
+                    fileInfo.textContent = 'No file selected';
+                    uploadBtn.disabled = true;
+                } else {
+                    const errorData = await response.json();
+                    resultElement.className = 'error';
+                    resultElement.textContent = `Error: ${errorData.error}`;
+                    uploadBtn.disabled = false;
+                }
+            } catch (error) {
+                resultElement.className = 'error';
+                resultElement.textContent = `Error: ${error.message}`;
+                uploadBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
