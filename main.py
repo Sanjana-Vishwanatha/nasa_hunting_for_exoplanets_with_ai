@@ -90,6 +90,7 @@ def upload_file():
     
 @app.route('/predict_tess', methods=['POST'])
 def predict_tess_route():
+    print("TESS predict route called")
     global exoplanet_model_tess
     try:
         data = request.get_json()
