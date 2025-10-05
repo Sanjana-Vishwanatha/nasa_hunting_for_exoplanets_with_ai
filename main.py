@@ -1,6 +1,6 @@
 from flask_cors import CORS
 from flask import Flask, request, jsonify
-from app import ExoplanetModel
+from kepler import ExoplanetModel
 from tess import ExoplanetModel_TESS
 import pandas as pd
 import numpy as np
@@ -105,4 +105,4 @@ def upload_tess_file():
     
 if __name__ == "__main__":
     print("----------------python file executing------------------")
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', debug=True)

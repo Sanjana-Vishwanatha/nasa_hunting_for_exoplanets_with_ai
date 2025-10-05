@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Deep Sky Divers</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* Back button */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.9) 100%);
+      color: white;
+      padding: 12px 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
+      z-index: 1000;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(42, 82, 152, 0.6);
+    }
+
+    /* Stars background */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* Main container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 20px 50px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .page-header h1 {
+      font-size: 3em;
+      margin-bottom: 15px;
+      text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .page-header p {
+      font-size: 1.3em;
+      opacity: 0.9;
+      color: #a8b5ff;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Who We Are Section */
+    .who-we-are {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 60px;
+      animation: fadeIn 1.2s ease-out;
+    }
+
+    .who-we-are h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #a8b5ff;
+    }
+
+    .who-we-are p {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Team Section */
+    .team-section {
+      margin-bottom: 60px;
+    }
+
+    .team-section h2 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 50px;
+      color: #a8b5ff;
+      animation: fadeIn 1.4s ease-out;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Team Card */
+    .team-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+      animation: fadeIn 1.6s ease-out;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .team-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(102, 126, 234, 0.5);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .team-photo {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .team-photo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+    }
+
+    .team-card h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+
+    .team-card .role {
+      color: #a8b5ff;
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+
+    .team-card .bio {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+      margin-bottom: 25px;
+      font-size: 0.95em;
+    }
+
+    /* Social Links */
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 1.2em;
+    }
+
+    .social-link:hover {
+      background: rgba(102, 126, 234, 0.5);
+      border-color: #667eea;
+      transform: scale(1.1);
+    }
+
+    /* Footer */
+    .footer {
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 30px 20px;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    .footer p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1em;
+    }
+
+    .footer .team-name {
+      color: #a8b5ff;
+      font-weight: 600;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .page-header h1 {
+        font-size: 2em;
+      }
+
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .back-btn {
+        top: 10px;
+        left: 10px;
+        padding: 10px 20px;
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Back button -->
+  <a href="index.html" class="back-btn">← Back to Home</a>
+
+  <!-- Stars background -->
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="page-header">
+      <h1>🚀 About Us</h1>
+      <p>Meet the Deep Sky Divers Team</p>
+    </div>
+
+    <!-- Who We Are Section -->
+    <div class="who-we-are">
+      <h2>Who We Are</h2>
+      <p>
+        We are Deep Sky Divers, a passionate team of space enthusiasts and AI researchers dedicated to advancing 
+        exoplanet discovery through machine learning. Our mission is to leverage cutting-edge artificial intelligence 
+        to analyze astronomical data from NASA's Kepler, TESS, and K2 missions, helping scientists identify potential 
+        exoplanets more efficiently and accurately. We believe that the next great discovery in space exploration 
+        lies at the intersection of astronomy and artificial intelligence, and we're committed to making that 
+        discovery accessible to everyone.
+      </p>
+    </div>
+
+    <!-- Team Section -->
+    <div class="team-section">
+      <h2>Our Team</h2>
+      <div class="team-grid">
+        <!-- Team Member 1 -->
+        <div class="team-card">
+          <img src="img/sanjana.jpg" alt="Sanjana Vishwanatha" class="team-photo">
+          <h3>Sanjana Vishwanatha</h3>
+          <div class="role">Software Engineer</div>
+          <p class="bio">
+            Passionate about machine learning and space exploration. Specializes in developing 
+            advanced algorithms for astronomical data analysis and exoplanet detection.
+          </p>
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/sanjana-vishwanatha2000/" target="_blank" class="social-link" title="LinkedIn">
+              in
+            </a>
+            <a href="https://github.com/Sanjana-Vishwanatha" target="_blank" class="social-link" title="GitHub">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Team Member 2 -->
+        <div class="team-card">
+          <img src="img/nagarjun.jpg" alt="Nagarjun TS" class="team-photo">
+          <h3>Nagarjun T S</h3>
+          <div class="role">AI / ML Engineer</div>
+          <p class="bio">
+            Expert in data preprocessing and model optimization. Focuses on extracting meaningful 
+            insights from complex astronomical datasets and building robust prediction systems.
+          </p>
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/nagarjun-ts/" target="_blank" class="social-link" title="LinkedIn">
+              in
+            </a>
+            <a href="https://github.com/nagarjunts008" target="_blank" class="social-link" title="GitHub">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="team-name">Deep Sky Divers</p>
+    <p>NASA Space Apps Challenge 2025 - Hunting for Exoplanets with AI</p>
+    <p style="margin-top: 10px; font-size: 0.9em;">
+      © 2025 Deep Sky Divers. Exploring the cosmos, one exoplanet at a time.
+    </p>
+  </footer>
+
+  <script>
+    // Generate random stars
+    const starsContainer = document.getElementById('stars');
+    const numStars = 150;
+    
+    for (let i = 0; i < numStars; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      starsContainer.appendChild(star);
+    }
+  </script>
+</body>
+</html>

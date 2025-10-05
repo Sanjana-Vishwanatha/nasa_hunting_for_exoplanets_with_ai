@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A World Away - Exoplanet Exploration</title>
+  <title>Home</title>
+  <link rel="icon" type="image/png" href="./img/Logo.png">
   <style>
     * {
       margin: 0;
@@ -13,39 +14,204 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 40px 20px;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+      position: relative;
+      background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
     }
 
+    /* About Us Button */
+    .about-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.9) 100%);
+      color: white;
+      padding: 12px 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
+      z-index: 1000;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .about-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(42, 82, 152, 0.6);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Animated stars background */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* Shooting stars */
+    .shooting-star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);
+      animation: shoot 3s linear infinite;
+    }
+
+    @keyframes shoot {
+      0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-300px) translateY(300px);
+        opacity: 0;
+      }
+    }
+
+    /* Floating planets */
+    .planet {
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .planet-1 {
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+      top: 10%;
+      right: 15%;
+      animation-delay: 0s;
+    }
+
+    .planet-2 {
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle at 30% 30%, #51cf66, #2f9e44);
+      bottom: 15%;
+      left: 10%;
+      animation-delay: -10s;
+    }
+
+    .planet-3 {
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle at 30% 30%, #748ffc, #4c6ef5);
+      top: 50%;
+      right: 5%;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-30px) rotate(5deg);
+      }
+    }
+
+    /* Container with glass effect */
     .container {
       max-width: 800px;
       margin: auto;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
+                  0 0 80px rgba(102, 126, 234, 0.2);
       overflow: hidden;
       text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      z-index: 10;
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .header {
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.8) 0%, rgba(42, 82, 152, 0.8) 100%);
       color: white;
       padding: 50px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: grid-move 20s linear infinite;
+      opacity: 0.3;
+    }
+
+    @keyframes grid-move {
+      0% {
+        transform: translate(0, 0);
+      }
+      100% {
+        transform: translate(50px, 50px);
+      }
     }
 
     .header h1 {
       font-size: 2.5em;
       margin-bottom: 15px;
       font-weight: 600;
+      text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+      position: relative;
+      z-index: 1;
     }
 
     .header p {
       font-size: 1.2em;
       opacity: 0.9;
+      position: relative;
+      z-index: 1;
     }
 
     .button-container {
@@ -57,29 +223,77 @@
     }
 
     button {
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.9) 100%);
       color: white;
       padding: 16px 40px;
-      border: none;
-      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
       font-size: 1.2em;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
+      box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4),
+                  0 0 20px rgba(102, 126, 234, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    button:hover::before {
+      width: 300px;
+      height: 300px;
     }
 
     button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(42, 82, 152, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(42, 82, 152, 0.6),
+                  0 0 40px rgba(102, 126, 234, 0.4);
+      border-color: rgba(255, 255, 255, 0.5);
     }
 
     button:active {
-      transform: translateY(0);
+      transform: translateY(-1px);
+    }
+
+    button span {
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      .about-btn {
+        top: 10px;
+        right: 10px;
+        padding: 10px 20px;
+        font-size: 0.9em;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- About Us Button -->
+  <a href="about.html" class="about-btn">About Us</a>
+
+  <!-- Animated stars -->
+  <div class="stars" id="stars"></div>
+  
+  <!-- Floating planets -->
+  <div class="planet planet-1"></div>
+  <div class="planet planet-2"></div>
+  <div class="planet planet-3"></div>
+
   <div class="container">
     <div class="header">
       <h1>🪐 A World Away: Hunting for Exoplanets</h1>
@@ -87,10 +301,44 @@
     </div>
 
     <div class="button-container">
-      <button onclick="window.location.href='kepler.html'">Kepler</button>
-      <button onclick="window.location.href='tess.html'">TESS</button>
-      <button onclick="window.location.href='k2.html'">K2</button>
+      <button onclick="window.location.href='kepler.html'">
+        <span>Kepler</span>
+      </button>
+      <button onclick="window.location.href='tess.html'">
+        <span>TESS</span>
+      </button>
+      <button onclick="window.location.href='k2.html'">
+        <span>K2</span>
+      </button>
     </div>
   </div>
+
+  <script>
+    // Generate random stars
+    const starsContainer = document.getElementById('stars');
+    const numStars = 200;
+    
+    for (let i = 0; i < numStars; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      starsContainer.appendChild(star);
+    }
+
+    // Generate shooting stars
+    const numShootingStars = 3;
+    for (let i = 0; i < numShootingStars; i++) {
+      const shootingStar = document.createElement('div');
+      shootingStar.className = 'shooting-star';
+      shootingStar.style.left = Math.random() * 100 + '%';
+      shootingStar.style.top = Math.random() * 50 + '%';
+      shootingStar.style.animationDelay = Math.random() * 5 + 's';
+      shootingStar.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      starsContainer.appendChild(shootingStar);
+    }
+  </script>
 </body>
 </html>
