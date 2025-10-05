@@ -653,7 +653,13 @@
             const data = {};
             
             formData.forEach((value, key) => {
-                data[key] = isNaN(value) || value === '' ? value : parseFloat(value);
+                // Convert empty strings to null, otherwise parse as float
+                if (value === '' || value === null) {
+                    data[key] = null;
+                } else {
+                    const parsedValue = parseFloat(value);
+                    data[key] = isNaN(parsedValue) ? value : parsedValue;
+                }
             });
             
             const resultElement = document.getElementById('result');
@@ -673,7 +679,7 @@
                 
                 if (response.ok) {
                     resultElement.className = 'success';
-                    resultElement.textContent = `Prediction: ${result.predicted_label} (Code: ${result.predicted_class})`;
+                    resultElement.textContent = `Prediction: ${result.predicted_label}`;
                 } else {
                     resultElement.className = 'error';
                     resultElement.textContent = `Error: ${result.error}`;

@@ -519,43 +519,49 @@
 
         // Single prediction form
         document.getElementById('exoplanet-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(e.target);
-            const data = {};
-            
-            formData.forEach((value, key) => {
-                data[key] = isNaN(value) || value === '' ? value : parseFloat(value);
-            });
-            
-            const resultElement = document.getElementById('result');
-            resultElement.className = 'loading';
-            resultElement.textContent = 'Processing prediction...';
-            
-            try {
-                console.log('Sending data:', data);
-                const response = await fetch(`${API_URL}/predict_tess`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ user_input: data })
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    resultElement.className = 'success';
-                    resultElement.textContent = `Prediction: ${result.predicted_label} (Code: ${result.predicted_class})`;
-                } else {
-                    resultElement.className = 'error';
-                    resultElement.textContent = `Error: ${result.error}`;
-                }
-            } catch (error) {
-                resultElement.className = 'error';
-                resultElement.textContent = `Error: ${error.message}`;
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = {};
+        
+        formData.forEach((value, key) => {
+            // Convert empty strings to null, otherwise parse as float
+            if (value === '' || value === null) {
+                data[key] = null;
+            } else {
+                const parsedValue = parseFloat(value);
+                data[key] = isNaN(parsedValue) ? value : parsedValue;
             }
         });
+        
+        const resultElement = document.getElementById('result');
+        resultElement.className = 'loading';
+        resultElement.textContent = 'Processing prediction...';
+        
+        try {
+            console.log('Sending data:', data);
+            const response = await fetch(`${API_URL}/predict_tess`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_input: data })
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                resultElement.className = 'success';
+                resultElement.textContent = `Prediction: ${result.predicted_label}`;
+            } else {
+                resultElement.className = 'error';
+                resultElement.textContent = `Error: ${result.error}`;
+            }
+        } catch (error) {
+            resultElement.className = 'error';
+            resultElement.textContent = `Error: ${error.message}`;
+        }
+    });
 
         // File upload handling
         const fileInput = document.getElementById('file-input');
