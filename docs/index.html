@@ -15,16 +15,43 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 80px 20px 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       position: relative;
       background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
     }
 
-    /* About Us Button */
+    /* Project Details Button - Top Left */
+    .project-details-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.9) 100%);
+      color: white;
+      padding: 12px 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
+      z-index: 1000;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .project-details-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(42, 82, 152, 0.6);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* About Us Button - Top Right */
     .about-btn {
       position: fixed;
       top: 20px;
@@ -143,6 +170,7 @@
     /* Container with glass effect */
     .container {
       max-width: 800px;
+      width: 100%;
       margin: auto;
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
@@ -287,23 +315,119 @@
       z-index: 1;
     }
 
+    /* Responsive design for smaller screens */
     @media (max-width: 768px) {
+      body {
+        padding: 100px 15px 30px;
+      }
+
+      .project-details-btn,
       .about-btn {
         top: 10px;
+        padding: 8px 16px;
+        font-size: 0.85em;
+      }
+
+      .project-details-btn {
+        left: 10px;
+      }
+
+      .about-btn {
         right: 10px;
-        padding: 10px 20px;
-        font-size: 0.9em;
+      }
+
+      .container {
+        margin: 0 auto;
+      }
+
+      .header {
+        padding: 30px 20px;
       }
 
       .header img {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
+      }
+
+      .header h1 {
+        font-size: 1.8em;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 1em;
+      }
+
+      .button-container {
+        padding: 40px 15px;
+        gap: 20px;
+      }
+
+      button {
+        padding: 14px 30px;
+        font-size: 1em;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .planet-1,
+      .planet-3 {
+        width: 60px;
+        height: 60px;
+      }
+
+      .planet-2 {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 90px 10px 20px;
+      }
+
+      .project-details-btn,
+      .about-btn {
+        padding: 6px 12px;
+        font-size: 0.75em;
+        border-radius: 20px;
+      }
+
+      .header h1 {
+        font-size: 1.5em;
+      }
+
+      .header p {
+        font-size: 0.9em;
+      }
+
+      .button-container {
+        padding: 30px 10px;
+        gap: 15px;
+      }
+
+      button {
+        padding: 12px 25px;
+        font-size: 0.95em;
+      }
+    }
+
+    /* Ensure scrollability */
+    @media (max-height: 700px) {
+      body {
+        align-items: flex-start;
+        padding-top: 100px;
+        padding-bottom: 40px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- About Us Button -->
+  <!-- Project Details Button - Top Left -->
+  <a href="project-details.html" class="project-details-btn">Project Details</a>
+
+  <!-- About Us Button - Top Right -->
   <a href="about.html" class="about-btn">About Us</a>
 
   <!-- Animated stars -->
